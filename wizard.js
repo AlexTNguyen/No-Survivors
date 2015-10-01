@@ -10,7 +10,7 @@ function Wizard(game, x, y){
 	game.physics.enable(this, Phaser.Physics.ARCADE);
 	this.body.allowRotation = false;
 	this.body.gravity.y = 300;
-	this.body.collideWorldNounds = true;
+	this.body.collideWorldBounds = true;
 	this.animations.add('move', [0, 1, 2, 3], 10, false);
 	this.animations.add('cast', [4, 5, 6], 10, false);
 	game.add.existing(this);
