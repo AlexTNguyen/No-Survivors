@@ -38,6 +38,8 @@ Wizard.prototype.update = function(){
 	else if (cursors.down.isDown) 
 	{
 		wizard.animations.play('cast');
+		if(!casting) plasma = new Plasma(game, plasmas, wizard.x, wizard.y - 50);
+		casting = true;
 	}
 	else
 	{ 
@@ -52,6 +54,7 @@ Wizard.prototype.update = function(){
 			game.time.events.add(200, function(){
 				wizard.animations.stop();
 				wizard.frame = 0;
+				casting = false;
 			});
 		}
 	}
