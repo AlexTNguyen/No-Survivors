@@ -18,8 +18,5 @@ function Plasma(game, group, x, y){
 }
 
 Plasma.prototype.update = function () {
-	plasmas.forEach(function(plasma) {
-		plasma.y--;
-		plasma.animations.play('plasma');
-	});
+
 }
