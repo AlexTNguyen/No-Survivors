@@ -11,9 +11,9 @@ function Plasma(game, group, x, y){
 	game.physics.enable(plasma, Phaser.Physics.ARCADE);
 	plasma.animations.add('plasma', [0, 1, 2, 3], 10, false);
 	if(wizard.scale.x == 1){
-		plasma.body.velocity.x = -150;
+		plasma.body.velocity.x = -300;
 	}
-	else plasma.body.velocity.x = 150;
+	else plasma.body.velocity.x = 300;
 	//game.add.existing(this);
 }
 

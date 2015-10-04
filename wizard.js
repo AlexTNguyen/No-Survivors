@@ -60,6 +60,6 @@ Wizard.prototype.update = function(){
 	}
 	if (cursors.up.isDown && wizard.body.touching.down)
 	{
-		wizard.body.velocity.y = -350;
+		wizard.body.velocity.y = -250;
 	}
 }
