@@ -6,17 +6,23 @@ Plasma.prototype.force = {x:0.0, y:0.0};
 
 function Plasma(game, group, x, y){
 	plasma = group.create(x, y, 'plasma');
-	//this.anchor.setTo(0.5, 1);
 	plasma.scale.setTo(2, 2);
 	game.physics.enable(plasma, Phaser.Physics.ARCADE);
+		plasma.body.setSize(12, 12, 10, 10);
 	plasma.animations.add('plasma', [0, 1, 2, 3], 10, false);
 	if(wizard.scale.x == 1){
 		plasma.body.velocity.x = -300;
 	}
 	else plasma.body.velocity.x = 300;
-	//game.add.existing(this);
 }
 
-Plasma.prototype.update = function () {
-
+Plasma.prototype.sequence = function () {
+	sequence = "";
+	var letters = "ASDF"
+	for (var i=0; i<seqlength; i++)
+	{
+		sequence += letters.charAt(Math.floor(Math.random() * letters.length));
+		text.addColor('#ff0000', 17 + i);
+	}
+	text.setText("Plasma Sequence: " + sequence);
 }

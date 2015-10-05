@@ -3,7 +3,11 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, "game", {preload:preload, upda
 var wizard;
 var plasma;
 var casting;
-
+var style = { font: "bold 16px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+var sequence = "ASD";
+var input = "";
+var inputIndex = 0;
+var seqlength = 3;
 function preload() 
 {
 	game.load.spritesheet('wizard', 'sprites/wiz1.png', 43, 49);
@@ -31,8 +35,12 @@ function create()
 		ground.body.immovable = true;
 	}
 
+	text = game.add.text(300, 560, "Plasma Sequence: " + sequence, style);
+	text.addColor('#ff0000', 17);
+
+	game.input.keyboard.onDownCallback = handleInput;
+
 	game.time.events.loop(3000, createZombie, this);
-	//zombie = new Zombie(game, 50, 400);
 }
 
 function createZombie () {
@@ -60,5 +68,51 @@ function update()
 function die(zombie, plasma) {
     zombie.faint(); 
     plasma.destroy();
+}
+
+function handleInput(key)
+{
+	if((key.keyCode > 64) && (key.keyCode < 91))
+	{
+		console.log(key.keyCode);
+		input += String.fromCharCode(key.keyCode);
+		if(input[inputIndex] == sequence[inputIndex]) 
+		{
+			text.addColor('#009900', 17 + inputIndex);
+			if(inputIndex < (seqlength -1)) 
+			{
+				text.addColor('#ff0000', 18 + inputIndex);
+				inputIndex++;
+			}
+			else if(inputIndex == (seqlength - 1))
+			{
+				wizard.animations.play('cast');
+				if(!casting){
+					if(wizard.scale.x == 1){
+						plasma = new Plasma(game, plasmas, wizard.x - 25, wizard.y - 50);
+					}
+					else plasma = new Plasma(game, plasmas, wizard.x, wizard.y - 50);
+				} 
+				plasma.sequence();
+				casting = true;
+				input = "";
+				inputIndex = 0;
+			}
+			else
+			{
+				input = "";
+				inputIndex = 0;
+			}
+		}
+		else 
+		{
+			input = "";
+			inputIndex = 0;
+			for(var i = 0; i < seqlength; i++)
+			{
+				text.addColor('#ff0000', 17 + i);
+			}
+		}
+	}
 }
 
