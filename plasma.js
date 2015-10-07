@@ -17,12 +17,12 @@ function Plasma(game, group, x, y){
 }
 
 Plasma.prototype.sequence = function () {
-	sequence = "";
+	psequence = "";
 	var letters = "ASDF"
 	for (var i=0; i<seqlength; i++)
 	{
-		sequence += letters.charAt(Math.floor(Math.random() * letters.length));
+		psequence += letters.charAt(Math.floor(Math.random() * letters.length));
 		text.addColor('#ff0000', 17 + i);
 	}
-	text.setText("Plasma Sequence: " + sequence);
+	text.setText("Plasma Sequence: " + psequence);
 }
