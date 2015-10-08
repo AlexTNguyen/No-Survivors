@@ -8,7 +8,7 @@ function Fire(game, group, x, y){
 	fire = group.create(x, y, 'fire');
 	fire.anchor.setTo(1, 0.5);
 	//fire.scale.y = -1;
-	fire.scale.setTo(2, -2);
+	fire.scale.setTo(2, 2);
 	game.physics.enable(fire, Phaser.Physics.ARCADE);
 	fire.animations.add('fire', [0, 1, 2, 3], 10, false);
 	if(wizard.scale.x == 1){
