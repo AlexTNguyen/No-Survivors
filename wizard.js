@@ -11,8 +11,12 @@ function Wizard(game, x, y){
 	this.body.allowRotation = false;
 	this.body.gravity.y = 300;
 	this.body.collideWorldBounds = true;
+	this.body.setSize(36, 46, 0, 0);
+	this.invincible = false;
 	this.animations.add('move', [0, 1, 2, 3], 10, false);
 	this.animations.add('cast', [4, 5, 6], 10, false);
+	this.animations.add('die', [7, 8], 10, false);
+	this.animations.add('flinch', [9], 10, true);
 	game.add.existing(this);
 }
 
@@ -75,4 +79,20 @@ Wizard.prototype.update = function(){
 	{
 		wizard.body.velocity.y = -250;
 	}
+}
+
+Wizard.prototype.flinch = function () {
+	this.toggleInvincible();
+	//game.time.events.add(2000, this.toggleInvincible, this);
+	//wizard.tint = 0xff0000;
+	//wizard.animations.play('flinch');
+}
+
+Wizard.prototype.toggleInvincible = function () {
+	wizard.invincible = true;
+	wizard.tint = 0xff0000;
+}
+
+Wizard.prototype.die = function () {
+	//wizard.animations.play('die');
 }

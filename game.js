@@ -13,8 +13,12 @@ var inputIndex = 0;
 var inputIndex2 = 0;
 var seqlength = 3;
 var fseqlength = 4;
+var HP = 5;
+var invincTime = 0; 
+
 function preload() 
 {
+	//game.load.spritesheet('wizard', 'sprites/wiz2.png', 52, 46);
 	game.load.spritesheet('wizard', 'sprites/wiz1.png', 43, 49);
 	game.load.spritesheet('ground', 'sprites/Ground&Stone/Ground&Stone/Stone/ground5.png');
 	game.load.spritesheet('dungeon', 'sprites/dungeon.jpg');
@@ -46,6 +50,7 @@ function create()
 	text.addColor('#ff0000', 17);
 	text2 = game.add.text(300, 575, "Firestorm Sequence: " + fsequence, style);
 	text2.addColor('#ff0000', 20);
+	hpText = game.add.text(5, 5, "HP: " + HP, style);
 
 	game.input.keyboard.onDownCallback = handleInput;
 
@@ -68,6 +73,16 @@ function update()
 {
 	game.physics.arcade.collide(wizard, stones);
 	game.physics.arcade.collide(zombies, stones);
+	if(wizard.invincible == false) { 
+		game.physics.arcade.overlap(wizard, zombies, flinch, null);
+	}
+	else{
+		if(invincTime + 2 <= game.time.totalElapsedSeconds())
+		{
+			wizard.invincible = false;
+			wizard.tint = 0xffffff;
+		}
+	}
 	game.physics.arcade.overlap(zombies, plasmas, die, null);
 	game.physics.arcade.overlap(zombies, fireballs, die, null);
 	plasmas.forEach(function(plasma) {
@@ -81,6 +96,19 @@ function update()
 function die(zombie, spell) {
     zombie.faint(); 
     spell.destroy();
+}
+
+function flinch(wizard, zombie) {
+	if (HP > 0) {
+		HP--;
+		game.world.remove(hpText);
+		hpText = game.add.text(5, 5, "HP: " + HP, style);
+		wizard.flinch();
+		invincTime = game.time.totalElapsedSeconds(); 
+	}
+	else {
+		wizard.die(); 
+	}
 }
 
 function handleInput(key)
