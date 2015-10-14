@@ -15,7 +15,7 @@ function Fire(game, group, x, y){
 		fire.body.velocity.x = -70;
 	}
 	else fire.body.velocity.x = 70;
-	fire.body.velocity.y = 400;
+	fire.body.velocity.y = 700;
 
 }
 

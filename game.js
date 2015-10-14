@@ -3,6 +3,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, "game", {preload:preload, upda
 var wizard;
 var plasma;
 var casting;
+var flinching;
 var style = { font: "bold 16px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
 var psequence = "ASD";
 var fsequence = "QWER";
@@ -15,11 +16,13 @@ var seqlength = 3;
 var fseqlength = 4;
 var HP = 5;
 var invincTime = 0; 
+var gameOver = false;
+var playOnce = false;
 
 function preload() 
 {
-	//game.load.spritesheet('wizard', 'sprites/wiz2.png', 52, 46);
-	game.load.spritesheet('wizard', 'sprites/wiz1.png', 43, 49);
+	game.load.spritesheet('wizard', 'sprites/wiz2.png', 52, 46);
+	//game.load.spritesheet('wizard', 'sprites/wiz1.png', 43, 49);
 	game.load.spritesheet('ground', 'sprites/Ground&Stone/Ground&Stone/Stone/ground5.png');
 	game.load.spritesheet('dungeon', 'sprites/dungeon.jpg');
 	game.load.spritesheet('plasma', 'sprites/plasma.png', 32, 28);
@@ -53,8 +56,8 @@ function create()
 	hpText = game.add.text(5, 5, "HP: " + HP, style);
 
 	game.input.keyboard.onDownCallback = handleInput;
-
 	game.time.events.loop(3000, createZombie, this);
+
 }
 
 function createZombie () {
@@ -71,26 +74,32 @@ function createZombie () {
 
 function update()
 {
-	game.physics.arcade.collide(wizard, stones);
-	game.physics.arcade.collide(zombies, stones);
-	if(wizard.invincible == false) { 
-		game.physics.arcade.overlap(wizard, zombies, flinch, null);
+	if(HP == 0) {
+		gameOver = true; 
+		game.time.events.pause();
+		gameOverText = game.add.text(game.world.width / 2 - 265, game.world.height / 2 - 25, "GAME OVER",{ font: '100px Lucida Console', fill: '#fff', align: 'center'});
 	}
-	else{
-		if(invincTime + 2 <= game.time.totalElapsedSeconds())
-		{
-			wizard.invincible = false;
-			wizard.tint = 0xffffff;
+
+		game.physics.arcade.collide(wizard, stones);
+		game.physics.arcade.collide(zombies, stones);
+		if(wizard.invincible == false) { 
+			game.physics.arcade.overlap(wizard, zombies, flinch, null);
 		}
-	}
-	game.physics.arcade.overlap(zombies, plasmas, die, null);
-	game.physics.arcade.overlap(zombies, fireballs, die, null);
-	plasmas.forEach(function(plasma) {
-		plasma.animations.play('plasma');
-	});
-	fireballs.forEach(function(fireball){
-		fireball.animations.play('fire');
-	})
+		else{
+			if(invincTime + 2 <= game.time.totalElapsedSeconds())
+			{
+				wizard.invincible = false;
+				wizard.tint = 0xffffff;
+			}
+		}
+		game.physics.arcade.overlap(zombies, plasmas, die, null);
+		game.physics.arcade.overlap(zombies, fireballs, die, null);
+		plasmas.forEach(function(plasma) {
+			plasma.animations.play('plasma');
+		});
+		fireballs.forEach(function(fireball){
+			fireball.animations.play('fire');
+		})
 }
 
 function die(zombie, spell) {
@@ -106,87 +115,86 @@ function flinch(wizard, zombie) {
 		wizard.flinch();
 		invincTime = game.time.totalElapsedSeconds(); 
 	}
-	else {
-		wizard.die(); 
-	}
 }
 
 function handleInput(key)
 {
-	if((key.keyCode > 64) && (key.keyCode < 91))
-	{
-		input = String.fromCharCode(key.keyCode);
-		if(input == 'A' || input == 'S' || input == 'D' || input =='F') pseq += input;
-		else fseq += input;
-		if(pseq[inputIndex] == psequence[inputIndex]) 
+	if(gameOver == false) {
+		if((key.keyCode > 64) && (key.keyCode < 91))
 		{
-			text.addColor('#009900', 17 + inputIndex);
-			if(inputIndex < (seqlength -1)) 
+			input = String.fromCharCode(key.keyCode);
+			if(input == 'A' || input == 'S' || input == 'D' || input =='F') pseq += input;
+			else fseq += input;
+			if(pseq[inputIndex] == psequence[inputIndex]) 
 			{
-				text.addColor('#ff0000', 18 + inputIndex);
-				inputIndex++;
-			}
-			else if(inputIndex == (seqlength - 1))
-			{
-				if(!casting){
-					wizard.animations.play('cast');
-					if(wizard.scale.x == 1){
-						plasma = new Plasma(game, plasmas, wizard.x - 25, wizard.y - 50);
+				text.addColor('#009900', 17 + inputIndex);
+				if(inputIndex < (seqlength -1)) 
+				{
+					text.addColor('#ff0000', 18 + inputIndex);
+					inputIndex++;
+				}
+				else if(inputIndex == (seqlength - 1))
+				{
+					if(!casting){
+						wizard.animations.play('cast');
+						if(wizard.scale.x == 1){
+							plasma = new Plasma(game, plasmas, wizard.x - 25, wizard.y - 50);
+						}
+						else plasma = new Plasma(game, plasmas, wizard.x, wizard.y - 50); 
+						plasma.sequence();
+						casting = true;
+						pseq = "";
+						inputIndex = 0;
 					}
-					else plasma = new Plasma(game, plasmas, wizard.x, wizard.y - 50); 
-					plasma.sequence();
-					casting = true;
+				}
+				else
+				{
 					pseq = "";
 					inputIndex = 0;
 				}
 			}
-			else
+			else if(fseq[inputIndex2] == fsequence[inputIndex2])
 			{
-				pseq = "";
-				inputIndex = 0;
-			}
-		}
-		else if(fseq[inputIndex2] == fsequence[inputIndex2])
-		{
-			text2.addColor('#009900', 20 + inputIndex2);
-			if(inputIndex2 < (fseqlength - 1))
-			{
-				text2.addColor('#ff0000', 21 + inputIndex2);
-				inputIndex2++;
-			}
-			else if(inputIndex2 == (fseqlength - 1))
-			{
-				if(!casting){
-					wizard.animations.play('cast');
-					for(var i = 0; i < 5; i++)
-					{
-						var fireball = new Fire(game, fireballs, (i * 40) + (wizard.x - 50), 0, 'fire');
+				text2.addColor('#009900', 20 + inputIndex2);
+				if(inputIndex2 < (fseqlength - 1))
+				{
+					text2.addColor('#ff0000', 21 + inputIndex2);
+					inputIndex2++;
+				}
+				else if(inputIndex2 == (fseqlength - 1))
+				{
+					if(!casting){
+						wizard.animations.play('cast');
+						for(var i = 0; i < 5; i++)
+						{
+							var fireball = new Fire(game, fireballs, (i * 40) + (wizard.x - 50), 0, 'fire');
+						}
+						fireball.sequence();
+						casting = true;
+						fseq = "";
+						inputIndex2 = 0;
 					}
-					fireball.sequence();
-					casting = true;
+				}
+				else
+				{
 					fseq = "";
 					inputIndex2 = 0;
 				}
 			}
-			else
+			else 
 			{
+				pseq = "";
+				inputIndex = 0;
 				fseq = "";
 				inputIndex2 = 0;
-			}
-		}
-		else 
-		{
-			pseq = "";
-			inputIndex = 0;
-			fseq = "";
-			inputIndex2 = 0;
-			for(var i = 0; i < seqlength; i++)
-			{
-				text.addColor('#ff0000', 17 + i);
-			}
-			for( var i = 0; i < fseqlength; i++)
-			{
-				text2.addColor('#ff0000', 20 + i);
+				for(var i = 0; i < seqlength; i++)
+				{
+					text.addColor('#ff0000', 17 + i);
+				}
+				for( var i = 0; i < fseqlength; i++)
+				{
+					text2.addColor('#ff0000', 20 + i);
+				}
 			}
 		}
 	}

@@ -15,69 +15,95 @@ function Wizard(game, x, y){
 	this.invincible = false;
 	this.animations.add('move', [0, 1, 2, 3], 10, false);
 	this.animations.add('cast', [4, 5, 6], 10, false);
-	this.animations.add('die', [7, 8], 10, false);
-	this.animations.add('flinch', [9], 10, true);
+	this.animations.add('die', [7, 8], 1, false);
+	this.animations.add('flinch', [9], 1, true);
 	game.add.existing(this);
 }
 
 Wizard.prototype.update = function(){
 	wizard.body.velocity.x = 0;
-
-	if (cursors.left.isDown)
-	{
-		if(!casting)
+	if(gameOver == false) {
+		if (cursors.left.isDown)
 		{
-			wizard.scale.x = 1;
-			wizard.animations.play('move');
+			if(!casting && !flinching)
+			{
+				wizard.scale.x = 1;
+				wizard.animations.play('move');
+			}
+			//allow casting animation to finish before going back to
+			//idle state
+			else if(wizard.frame == 6){
+				game.time.events.add(200, function(){
+					wizard.animations.stop();
+					wizard.frame = 0;
+					casting = false;
+				});
+			}
+			else if(wizard.frame == 9) { 
+				game.time.events.add(500, function() {
+					wizard.animations.stop();
+					wizard.frame = 0;
+					flinching = false;
+				});
+			}
+			wizard.body.velocity.x = -150;
 		}
-		//allow casting animation to finish before going back to
-		//idle state
-		else if(wizard.frame == 6){
-			game.time.events.add(200, function(){
-				wizard.animations.stop();
-				wizard.frame = 0;
-				casting = false;
-			});
-		}
-		wizard.body.velocity.x = -150;
-	}
-	else if (cursors.right.isDown)
-	{
-		if(!casting)
+		else if (cursors.right.isDown)
 		{
-			wizard.animations.play('move');
-			//flip sprite along y axis
-			wizard.scale.x = -1;
+			if(!casting && !flinching)
+			{
+				wizard.animations.play('move');
+				//flip sprite along y axis
+				wizard.scale.x = -1;
+			}
+			//allow casting animation to finish before going back to
+			//idle state
+			else if(wizard.frame == 6){
+				game.time.events.add(200, function(){
+					wizard.animations.stop();
+					wizard.frame = 0;
+					casting = false;
+				});
+			}
+			else if(wizard.frame == 9) { 
+				game.time.events.add(500, function() {
+					wizard.animations.stop();
+					wizard.frame = 0;
+					flinching = false;
+				});
+			}
+			wizard.body.velocity.x = 150;
 		}
-		//allow casting animation to finish before going back to
-		//idle state
-		else if(wizard.frame == 6){
-			game.time.events.add(200, function(){
-				wizard.animations.stop();
-				wizard.frame = 0;
-				casting = false;
-			});
-		}
-		wizard.body.velocity.x = 150;
-	}
-	//if not casting then stop animation
-	else if(!casting){
-		wizard.animations.stop();
-		wizard.frame = 0;
-	}
-	else if(wizard.frame == 6){
-		game.time.events.add(200, function(){
+		//if not casting then stop animation
+		else if(!casting && !flinching){
 			wizard.animations.stop();
 			wizard.frame = 0;
-			casting = false;
-		});
+		}
+		else if(wizard.frame == 6){
+			game.time.events.add(200, function(){
+				wizard.animations.stop();
+				wizard.frame = 0;
+				casting = false;
+			});
+		}
+		else if(wizard.frame == 9) { 
+			game.time.events.add(500, function() {
+				wizard.animations.stop();
+				wizard.frame = 0;
+				flinching = false;
+			});
+		}
+
+
+
+		if (cursors.up.isDown && wizard.body.touching.down)
+		{
+			wizard.body.velocity.y = -250;
+		}
 	}
-
-
-
-	if (cursors.up.isDown && wizard.body.touching.down)
-	{
-		wizard.body.velocity.y = -250;
+	else if(playOnce == false) {
+		wizard.animations.play('die');
+		playOnce = true;
 	}
 }
 
@@ -85,14 +111,11 @@ Wizard.prototype.flinch = function () {
 	this.toggleInvincible();
 	//game.time.events.add(2000, this.toggleInvincible, this);
 	//wizard.tint = 0xff0000;
-	//wizard.animations.play('flinch');
+	wizard.animations.play('flinch');
+	flinching = true;
 }
 
 Wizard.prototype.toggleInvincible = function () {
 	wizard.invincible = true;
 	wizard.tint = 0xff0000;
-}
-
-Wizard.prototype.die = function () {
-	//wizard.animations.play('die');
 }

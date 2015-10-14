@@ -17,12 +17,18 @@ function Zombie(game, x, y){
 };
 
 Zombie.prototype.update = function () {
-	if(this.body.x < wizard.body.x)
-		this.scale.x = -1;
-	else
-		this.scale.x = 1;
-	game.physics.arcade.moveToObject(this, wizard, 100);
-	if (this.frame == 18) this.destroy();
+	if(gameOver == false) {
+		if(this.body.x < wizard.body.x)
+			this.scale.x = -1;
+		else
+			this.scale.x = 1;
+		game.physics.arcade.moveToObject(this, wizard, 100);
+		if (this.frame == 18) this.destroy();
+	}
+	else {
+		this.animations.stop();
+		this.body.velocity.x = 0;
+	}
 };
 
 Zombie.prototype.faint = function() {
