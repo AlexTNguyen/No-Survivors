@@ -85,9 +85,9 @@ function create()
 	monstersText = game.add.text(5, 35, "Monsters left: " + monLeft, style);
 
 	game.input.keyboard.onDownCallback = handleInput;
-	game.time.events.loop(3000 * zfreq - (gameLevel * 100), createZombie, this);
+	game.time.events.loop(3000 * zfreq - (gameLevel * 300), createZombie, this);
 	game.time.events.add(15000, function(){
-			game.time.events.loop(7000 * efreq - (gameLevel * 100), createEnemy, this);
+			game.time.events.loop(7000 * efreq - (gameLevel * 300), createEnemy, this);
 	})
 	game.time.events.add(20000, function(){
 		zfreq = 0.9;
