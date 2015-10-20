@@ -35,4 +35,5 @@ Zombie.prototype.faint = function() {
 	this.body.velocity.x = 0; 
 	this.animations.play('die');
 	this.body.enable = false;
+	return true;
 }

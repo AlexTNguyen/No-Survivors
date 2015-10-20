@@ -14,7 +14,10 @@ function Plasma(game, group, x, y){
 		plasma.body.velocity.x = -300;
 	}
 	else plasma.body.velocity.x = 300;
+	plasma.type = 'p';
 }
+
+Plasma.prototype.type = 'p';
 
 Plasma.prototype.sequence = function () {
 	psequence = "";

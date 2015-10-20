@@ -16,8 +16,11 @@ function Fire(game, group, x, y){
 	}
 	else fire.body.velocity.x = 70;
 	fire.body.velocity.y = 700;
+	fire.type = 'f';
 
 }
+
+Fire.prototype.type = 'f';
 
 Fire.prototype.sequence = function () {
 	fsequence = "";

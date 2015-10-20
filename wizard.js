@@ -46,6 +46,10 @@ Wizard.prototype.update = function(){
 					flinching = false;
 				});
 			}
+			else{
+				flinching = false;
+				//casting = false;
+			}
 			wizard.body.velocity.x = -150;
 		}
 		else if (cursors.right.isDown)
@@ -72,6 +76,10 @@ Wizard.prototype.update = function(){
 					flinching = false;
 				});
 			}
+			else{
+				flinching = false;
+				//casting = false;
+			}
 			wizard.body.velocity.x = 150;
 		}
 		//if not casting then stop animation
@@ -93,6 +101,10 @@ Wizard.prototype.update = function(){
 				flinching = false;
 			});
 		}
+		else{
+			flinching = false;
+			//casting = false;
+		}
 
 
 
@@ -111,8 +123,10 @@ Wizard.prototype.flinch = function () {
 	this.toggleInvincible();
 	//game.time.events.add(2000, this.toggleInvincible, this);
 	//wizard.tint = 0xff0000;
-	wizard.animations.play('flinch');
-	flinching = true;
+	if(!casting) {
+		wizard.animations.play('flinch');
+		flinching = true;
+	}
 }
 
 Wizard.prototype.toggleInvincible = function () {
