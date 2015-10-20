@@ -23,6 +23,12 @@ var plasmalvl = 0;
 var maxlvl = 50;
 var zfreq = 1;
 var efreq = 1;
+var gameLevel = 1;
+var lastLevelTime = 0;
+var numKilled = 0; 
+var levelGoal = 4;
+var monLeft = 4;
+var monSpawned = 0;
 
 function preload() 
 {
@@ -42,8 +48,11 @@ function preload()
 function create()
 {
 	music = game.add.audio('music');
-	music.play();
-	music.loopFull(1);
+	console.log(music.isPlaying);
+	if(gameLevel == 1) {
+		music.play();
+		music.loopFull(1);
+	}
 	expsound = game.add.audio('explosion');
 	expsound.volume = 0.4;
 	hitsound = game.add.audio('hit');
@@ -72,12 +81,14 @@ function create()
 	text2 = game.add.text(300, 575, "Firestorm Sequence: " + fsequence, style);
 	text2.addColor('#ff0000', 20);
 	hpText = game.add.text(5, 5, "HP: " + HP, style);
+	levelText = game.add.text(5, 20, "Level: " + gameLevel, style);
 	timeText = game.add.text(300, 5, "Time Survived: " + Math.floor(game.time.totalElapsedSeconds()), style);
+	monstersText = game.add.text(5, 35, "Monsters left: " + monLeft, style);
 
 	game.input.keyboard.onDownCallback = handleInput;
-	game.time.events.loop(3000 * zfreq, createZombie, this);
+	game.time.events.loop(3000 * zfreq - (gameLevel * 100), createZombie, this);
 	game.time.events.add(15000, function(){
-			game.time.events.loop(7000 * efreq, createEnemy, this);
+			game.time.events.loop(7000 * efreq - (gameLevel * 100), createEnemy, this);
 	})
 	game.time.events.add(20000, function(){
 		zfreq = 0.9;
@@ -98,34 +109,51 @@ function create()
 		efreq = 0.6;
 		zfreq = 0.5;
 	})
-
 }
 
 function createZombie () {
-	var random = Math.floor(Math.random() * 2);
-	if(random == 0) {
-		zombie = new Zombie(game, game.world.width - 50, 400);
-		zombies.add(zombie);
-	}
-	else {
-	 	zombie = new Zombie(game, 50, 400);
-	 	zombies.add(zombie);
+	monSpawned++;
+	if(monSpawned <= levelGoal) {
+		var random = Math.floor(Math.random() * 2);
+		if(random == 0) {
+			zombie = new Zombie(game, game.world.width - 50, 400);
+			zombies.add(zombie);
+		}
+		else {
+		 	zombie = new Zombie(game, 50, 400);
+		 	zombies.add(zombie);
+		}
 	}
 }
 function createEnemy () {
-	var random = Math.floor(Math.random() * 2);
-	if(random == 0) {
-		enemy = new Enemy(game, game.world.width - 50, 500);
-		enemies.add(enemy);
-	}
-	else {
-	 	enemy = new Enemy(game, 50, 500);
-	 	enemies.add(enemy);
+	monSpawned++;
+	if(monSpawned <= levelGoal) {
+		var random = Math.floor(Math.random() * 2);
+		if(random == 0) {
+			enemy = new Enemy(game, game.world.width - 50, 500);
+			enemies.add(enemy);
+		}
+		else {
+		 	enemy = new Enemy(game, 50, 500);
+		 	enemies.add(enemy);
+		}
 	}
 }
 
 function update()
 {
+	if(numKilled == levelGoal){
+		//console.log(game.time.elapsedSecondsSince(lastLevelTime));
+		//lastLevelTime = game.time.totalElapsedSeconds();
+		gameLevel++;
+		levelGoal += 2;
+		monLeft += levelGoal;
+		numKilled = 0;
+		monSpawned = 0;
+		levelCompleteText = game.add.text(game.world.width / 2 - 265, game.world.height / 2 - 25, "LEVEL COMPLETE",{ font: '100px Lucida Console', fill: '#fff', align: 'center'});
+		game.time.events.add(10000, game.world.remove(levelCompleteText));
+		game.time.events.add(10000, game.state.restart(true, false, gameLevel, levelGoal, monLeft, numKilled, monSpawned));
+	}
 	if(HP == 0) {
 		//gameOver = true; 
 		game.time.events.pause();
@@ -135,6 +163,8 @@ function update()
 		gameOver = true;
 	}
 	else timeText = timeText.setText("Time Survived: " + Math.floor(game.time.totalElapsedSeconds()));
+
+	monstersText = monstersText.setText("Monsters left: " + monLeft);
 
 		game.physics.arcade.collide(wizard, stones);
 		game.physics.arcade.collide(zombies, stones);
@@ -163,6 +193,8 @@ function update()
 }
 
 function die(zombie, spell) {
+	numKilled++;
+	monLeft--;
 	expsound.play();
     fainted = zombie.faint();
     //updatetext = game.add.text(300, 300, "", style);
