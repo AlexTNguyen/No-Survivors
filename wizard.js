@@ -126,6 +126,7 @@ Wizard.prototype.flinch = function () {
 	if(!casting) {
 		wizard.animations.play('flinch');
 		flinching = true;
+		casting = false;
 	}
 }
 

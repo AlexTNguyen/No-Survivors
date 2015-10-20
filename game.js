@@ -193,8 +193,6 @@ function update()
 }
 
 function die(zombie, spell) {
-	numKilled++;
-	monLeft--;
 	expsound.play();
     fainted = zombie.faint();
     if(!fainted)
@@ -202,6 +200,8 @@ function die(zombie, spell) {
     	spell.destroy();
     	return;
     } 
+    numKilled++;
+	monLeft--;
     if(spell.type == 'f' && (firelvl < maxlvl)){
     	firelvl++;
     	if(firelvl % 10 == 0 ){ 
