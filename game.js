@@ -48,7 +48,6 @@ function preload()
 function create()
 {
 	music = game.add.audio('music');
-	console.log(music.isPlaying);
 	if(gameLevel == 1) {
 		music.play();
 		music.loopFull(1);
@@ -143,8 +142,10 @@ function createEnemy () {
 function update()
 {
 	if(numKilled == levelGoal){
-		//console.log(game.time.elapsedSecondsSince(lastLevelTime));
-		//lastLevelTime = game.time.totalElapsedSeconds();
+		pseq = "";
+		fseq = "";
+		casting = false;
+		flinching = false;
 		gameLevel++;
 		levelGoal += 2;
 		monLeft += levelGoal;
@@ -154,8 +155,7 @@ function update()
 		game.time.events.add(10000, game.world.remove(levelCompleteText));
 		game.time.events.add(10000, game.state.restart(true, false, gameLevel, levelGoal, monLeft, numKilled, monSpawned));
 	}
-	if(HP == 0) {
-		//gameOver = true; 
+	if(HP == 0) { 
 		game.time.events.pause();
 		if(!gameOver){
 			gameOverText = game.add.text(game.world.width / 2 - 265, game.world.height / 2 - 25, "GAME OVER",{ font: '100px Lucida Console', fill: '#fff', align: 'center'});
@@ -197,7 +197,6 @@ function die(zombie, spell) {
 	monLeft--;
 	expsound.play();
     fainted = zombie.faint();
-    //updatetext = game.add.text(300, 300, "", style);
     if(!fainted)
     {
     	spell.destroy();
